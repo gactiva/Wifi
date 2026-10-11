@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wi-Fi Radar | Chromebook</title>
+<style>
+:root{color-scheme:dark;--bg:#080d16;--panel:#101a29;--line:#22354b;--text:#e7f1ff;--muted:#91a6bf;--cyan:#5de1ff;--green:#7af0b2;--amber:#ffd27a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122b43 0,#080d16 52%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);min-height:100vh}
+main{max-width:900px;margin:auto;padding:28px 18px 44px}.top{display:flex;align-items:center;gap:14px;margin-bottom:24px}.logo{width:48px;height:48px;border:1px solid #2f6077;border-radius:15px;display:grid;place-items:center;color:var(--cyan);font-size:25px;background:#102638}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:2px;font-weight:800}.top h1{font-size:25px;margin:2px 0 0}.status{margin-left:auto;border:1px solid #254b40;border-radius:99px;padding:7px 10px;color:var(--green);font-size:11px;white-space:nowrap}
+.hero,.panel{background:linear-gradient(145deg,#111e30,#0d1522);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 14px 40px #0002}.hero{margin-bottom:16px}.hero h2{font-size:clamp(22px,4vw,32px);margin:0 0 8px}.hero p,.muted{color:var(--muted);line-height:1.6}.hero p{margin:0 0 18px}.actions{display:flex;flex-wrap:wrap;gap:10px}.btn{border:1px solid #2d536d;background:#14283b;color:var(--text);border-radius:12px;padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.primary{background:var(--cyan);color:#06131c;border-color:var(--cyan)}.btn:hover{filter:brightness(1.1)}.notice{font-size:12px;color:var(--amber);margin-top:14px;line-height:1.5}.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:16px}.panel h3{margin:0 0 5px;font-size:17px}.panel .muted{font-size:13px;margin:0 0 16px}.network{display:flex;align-items:center;gap:12px;border-top:1px solid #1f3044;padding:15px 0}.wifiicon{width:40px;height:40px;border-radius:12px;background:#162a3d;display:grid;place-items:center;font-size:20px;color:var(--cyan);flex-shrink:0}.netname{font-weight:700;overflow-wrap:anywhere}.netdesc{font-size:12px;color:var(--muted);margin-top:3px}.network .btn{margin-left:auto;padding:9px 11px;font-size:12px;flex-shrink:0}.tag{font-size:10px;color:var(--amber);border:1px solid #625033;padding:3px 6px;border-radius:6px;margin-left:6px}.steps{padding-left:18px;color:var(--muted);font-size:13px;line-height:1.8}.steps strong{color:var(--text)}.footer{text-align:center;color:#6f849c;font-size:11px;margin-top:22px}.message{display:none;margin-top:12px;padding:12px;border:1px solid #37556a;border-radius:10px;color:var(--cyan);font-size:13px;line-height:1.5}
+@media(max-width:680px){.grid{grid-template-columns:1fr}.status{display:none}main{padding:20px 13px}.hero,.panel{padding:18px}.network .btn{padding:8px}.netname{font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div class="logo">⌁</div><div><div class="eyebrow">LOCAL NETWORK TOOL</div><h1>Wi-Fi Radar</h1></div>
+    <div class="status">● CHROMEBOOK MODE</div>
+  </header>
+  <section class="hero">
+    <h2>Find your next connection.</h2>
+    <p>A simple Wi-Fi dashboard for your Chromebook. Use ChromeOS to scan nearby networks and connect securely.</p>
+    <div class="actions">
+      <button class="btn primary" id="openSettings">⌁ Open Wi-Fi settings</button>
+      <button class="btn" id="howScan">◎ How to scan nearby</button>
+    </div>
+    <div class="notice">Browser limitation: this page cannot read nearby Wi-Fi names or signal strengths directly. It will never invent scan results or ask you to enter your Wi-Fi password here.</div>
+    <div class="message" id="message" role="status"></div>
+  </section>
+  <div class="grid">
+    <section class="panel">
+      <h3>Nearby networks</h3><p class="muted">Your actual network list appears in ChromeOS settings, not inside this webpage.</p>
+      <div class="network">
+        <div class="wifiicon">⌁</div><div><div class="netname">Your saved Wi-Fi</div><div class="netdesc">Check connection status in system settings</div></div>
+        <button class="btn open" data-action="settings">Manage</button>
+      </div>
+      <div class="network">
+        <div class="wifiicon">◉</div><div><div class="netname">Nearby Wi-Fi networks</div><div class="netdesc">Available networks are listed by ChromeOS</div></div>
+        <button class="btn open" data-action="scan">View steps</button>
+      </div>
+    </section>
+    <aside class="panel">
+      <h3>Quick instructions</h3><p class="muted">Scan and connect in a few clicks.</p>
+      <ol class="steps">
+        <li><strong>Open settings</strong> using the button above.</li>
+        <li>Select the <strong>Wi-Fi</strong> section.</li>
+        <li>Turn Wi-Fi on and wait for nearby networks.</li>
+        <li>Choose your network and enter its password in ChromeOS.</li>
+      </ol>
+      <button class="btn primary" id="copySteps" style="width:100%">Copy instructions</button>
+    </aside>
+  </div>
+  <div class="footer">Wi-Fi Radar · Runs locally in your browser · No passwords collected</div>
+</main>
+<script>
+const msg=document.getElementById('message');
+function show(text){msg.textContent=text;msg.style.display='block'}
+function settings(){
+  show('ChromeOS controls Wi-Fi access. Click the clock at the bottom-right of your screen, open the network/Wi-Fi control, then choose Wi-Fi settings or the available network list.');
+  // Browser pages cannot reliably open chrome://os-settings/network on every ChromeOS version.
+  try { window.open('chrome://os-settings/network', '_blank'); } catch(e) {}
+}
+function scan(){
+  show('To scan: click the clock at the bottom-right → Wi-Fi/network arrow → turn Wi-Fi on. Nearby networks should appear in the system panel. This webpage cannot access that list directly.');
+}
+document.getElementById('openSettings').addEventListener('click',settings);
+document.getElementById('howScan').addEventListener('click',scan);
+document.querySelectorAll('.open').forEach(b=>b.addEventListener('click',()=>b.dataset.action==='settings'?settings():scan()));
+document.getElementById('copySteps').addEventListener('click',async()=>{
+ const text='On Chromebook: click the clock at bottom-right → Wi-Fi/network control → turn Wi-Fi on → choose a nearby network → enter its password in ChromeOS.';
+ try{await navigator.clipboard.writeText(text);show('Instructions copied.')}catch(e){show(text)}
+});
+</script>
+</body>
+</html>
